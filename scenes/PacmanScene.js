@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import WebFontFile from './WebFontFile';
+import Easystar from 'easystarjs'
 
 export default class PacmanScene extends Phaser.Scene {
   constructor() {
@@ -24,6 +25,8 @@ export default class PacmanScene extends Phaser.Scene {
   eatFantom = 0;
   gameOver = false;
   newGame = true;
+  ghostPhase = "scatter";
+  easystar = new Easystar.js()
 
   preload() {
     this.load.image('tiles', 'assets/images/drawtiles-spaced.png');
@@ -74,6 +77,10 @@ export default class PacmanScene extends Phaser.Scene {
     console.log(this.tab);
     this.pilesNumber = count;
     this.pileCount = 0;
+
+    // Easystar 
+    this.easystar.setGrid(this.tab)
+    this.easystar.setAcceptableTiles([0, 4, 3]);
 
     //Game Over message
 
@@ -158,11 +165,8 @@ export default class PacmanScene extends Phaser.Scene {
         this.score += 300;
       }
     });
-
     this.input.keyboard.on('keydown', (e) => this.pressKeyHandler(e));
-    setInterval(() => {
-      this.moveDirection();
-    }, 100);
+    setInterval(() => this.GhostMove(this.layer), 500, );
 
     //affichage score et vies restantes
 
@@ -354,71 +358,218 @@ export default class PacmanScene extends Phaser.Scene {
 
   // mouvement des fantomes
 
-  moveDirection() {
-    if (this.gameOver === false && this.newGame == false) {
-      let moveDir = ['left', 'right', 'up', 'down'];
-      let arrGhost = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
-      let tile = null;
-      for (let i = 0; i < arrGhost.length; i++) {
-        this.ghost = arrGhost[i];
+  
 
-        let move = moveDir[Math.floor(Math.random() * 4)];
-        switch (move) {
-          // --------------------------------------------------------------
-          case 'left':
-            tile = this.layer.getTileAtWorldXY(
-              this.ghost.x - 32,
-              this.ghost.y,
-              true,
-            );
-            if (tile.index !== 2) {
-              this.ghost.x -= 32;
-            }
-            break;
 
-          // ---------------------------------------------------
+  GhostChase(ghost) {
+    let playerPos = this.layer.getTileAtWorldXY(this.player.x, this.player.y - 16);
+    let ghostPos = this.layer.getTileAtWorldXY(ghost.x, ghost.y - 16);
+    // console.log(this.layer)
+    this.easystar.findPath(
+      ghostPos.x,
+      ghostPos.y,
+      playerPos.x,
+      playerPos.y,
+      (pathChase)  => {
+        console.log(pathChase)
+        if (pathChase === null) {
+          console.log("The path to the destination point was not found.");
+        }
+        if (pathChase) {
+          console.log('oui')
+          var currentPointx = pathChase[0].x;
+          var currentPointy = pathChase[0].y;
+          var currentNextPointx = pathChase[1].x;
+          var currentNextPointy = pathChase[1].y;
+          
+        }
 
-          case 'right':
-            tile = this.layer.getTileAtWorldXY(
-              this.ghost.x + 32,
-              this.ghost.y,
-              true,
-            );
-
-            if (tile.index !== 2) {
-              this.ghost.x += 32;
-            }
-            break;
-
-          // ---------------------------------------------------
-
-          case 'up':
-            tile = this.layer.getTileAtWorldXY(
-              this.ghost.x,
-              this.ghost.y - 32,
-              true,
-            );
-            if (tile.index !== 2) {
-              this.ghost.y -= 32;
-            }
-            break;
-
-          // ---------------------------------------------------
-
-          case 'down':
-            tile = this.layer.getTileAtWorldXY(
-              this.ghost.x,
-              this.ghost.y + 32,
-              true,
-            );
-            if (tile.index !== 2) {
-              this.ghost.y += 32;
-            }
-            break;
+        if (currentNextPointy < currentPointy) {
+          ghost.y -= 32;
+        } else if (currentNextPointy > currentPointy) {
+          ghost.y += 32;
+        } else if (currentNextPointx < currentPointx) {
+          ghost.x -= 32;
+        } else if (currentNextPointx > currentPointx) {
+          ghost.x += 32;
         }
       }
-    }
+    );
+
+    this.easystar.setIterationsPerCalculation(1000);
+    this.easystar.calculate();
   }
+
+  GhostScatter = (ghost, finalPosX, finalPosY) => {
+    let ghostPos = this.layer.getTileAtWorldXY(ghost.x, ghost.y - 16);
+    this.easystar.findPath(
+      ghostPos.x,
+      ghostPos.y,
+      finalPosX,
+      finalPosY,
+      (path) => {
+        if (path === null) {
+          console.log("The path to the destination point was not found.");
+        }
+        if (path) {
+          for (let i = 0; i < path.length; i++) {
+            setTimeout(() => {
+              ghost.y = path[i].y * 32 + 16;
+              ghost.x = path[i].x * 32 + 16;
+            }, i * 100);
+            if (i === path.length - 1) {
+              this.ghostPhase = null;
+            }
+          }
+        }
+      }
+    );
+
+    this.easystar.setIterationsPerCalculation(1000);
+    this.easystar.calculate();
+  }
+
+  GhostMoveRandom(ghost) {
+    let moveDir = ["left", "right", "up", "down"];
+      let move = moveDir[Math.floor(Math.random() * 4)];
+      switch (move) {
+        // --------------------------------------------------------------
+        case "left":
+          var tile = this.layer.getTileAtWorldXY(ghost.x - 32, ghost.y, true);
+          if (tile.index !== 2) {
+            ghost.x -= 32;
+          }
+          break;
+
+        // ---------------------------------------------------
+
+        case "right":
+          var tile = this.layer.getTileAtWorldXY(ghost.x + 32, ghost.y, true);
+
+          if (tile.index !== 2) {
+            ghost.x += 32;
+          } else {
+          }
+          break;
+
+        // ---------------------------------------------------
+
+        case "up":
+          var tile = this.layer.getTileAtWorldXY(ghost.x, ghost.y - 32, true);
+          if (tile.index !== 2) {
+            ghost.y -= 32;
+          }
+          break;
+
+        // ---------------------------------------------------
+
+        case "down":
+          var tile = this.layer.getTileAtWorldXY(ghost.x, ghost.y + 32, true);
+          if (tile.index !== 2) {
+            ghost.y += 32;
+          }
+          break;
+      }
+    
+  }
+
+
+  GhostMove(layer) {
+    
+    const ghosts = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
+    const FinalPos = [2, 1, 17, 1, 1, 20, 17, 20];
+    for (let i = 0; i < ghosts.length; i++) {
+      
+    let playerPos = layer.getTileAtWorldXY(this.player.x, this.player.y - 16);
+    let ghostPos = layer.getTileAtWorldXY(ghosts[i].x, ghosts[i].y - 16);
+    let ghostPhase = this.ghostPhase
+
+    this.easystar.findPath(
+      ghostPos.x,
+      ghostPos.y,
+      playerPos.x,
+      playerPos.y,
+       (pathCheck) => {
+      if (ghostPhase == "scatter") {
+        this.GhostScatter(ghosts[i], FinalPos[i * 2], FinalPos[i * 2 + 1])
+        ghostPhase = null;
+      } else if (ghostPhase == null && pathCheck.length <= 5) {
+        this.GhostChase(ghosts[i]);
+      } else if(ghostPhase == null && pathCheck.length > 5) {
+        this.GhostMoveRandom(ghosts[i])
+      }
+    })
+    }
+    this.easystar.setIterationsPerCalculation(1000);
+    this.easystar.calculate();
+  }
+  // setInterval(this.GhostMove, 100);
+
+  // moveDirection() {
+  //   if (this.gameOver === false && this.newGame == false) {
+  //     let moveDir = ['left', 'right', 'up', 'down'];
+  //     let arrGhost = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
+  //     let tile = null;
+  //     for (let i = 0; i < arrGhost.length; i++) {
+  //       this.ghost = arrGhost[i];
+
+  //       let move = moveDir[Math.floor(Math.random() * 4)];
+  //       switch (move) {
+  //         // --------------------------------------------------------------
+  //         case 'left':
+  //           tile = this.layer.getTileAtWorldXY(
+  //             this.ghost.x - 32,
+  //             this.ghost.y,
+  //             true,
+  //           );
+  //           if (tile.index !== 2) {
+  //             this.ghost.x -= 32;
+  //           }
+  //           break;
+
+  //         // ---------------------------------------------------
+
+  //         case 'right':
+  //           tile = this.layer.getTileAtWorldXY(
+  //             this.ghost.x + 32,
+  //             this.ghost.y,
+  //             true,
+  //           );
+
+  //           if (tile.index !== 2) {
+  //             this.ghost.x += 32;
+  //           }
+  //           break;
+
+  //         // ---------------------------------------------------
+
+  //         case 'up':
+  //           tile = this.layer.getTileAtWorldXY(
+  //             this.ghost.x,
+  //             this.ghost.y - 32,
+  //             true,
+  //           );
+  //           if (tile.index !== 2) {
+  //             this.ghost.y -= 32;
+  //           }
+  //           break;
+
+  //         // ---------------------------------------------------
+
+  //         case 'down':
+  //           tile = this.layer.getTileAtWorldXY(
+  //             this.ghost.x,
+  //             this.ghost.y + 32,
+  //             true,
+  //           );
+  //           if (tile.index !== 2) {
+  //             this.ghost.y += 32;
+  //           }
+  //           break;
+  //       }
+  //     }
+  //   }
+  // }
 
   pressKeyHandler(e) {
     if (this.gameOver === false && this.newGame == false) {
