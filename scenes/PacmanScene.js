@@ -461,7 +461,7 @@ export default class PacmanScene extends Phaser.Scene {
             setTimeout(() => {
               ghost.y = path[i].y * 32 + 16;
               ghost.x = path[i].x * 32 + 16;
-            }, i * 100);
+            }, i * 500);
             if (i === path.length - 1) {
               this.ghostPhase = null;
             }
@@ -778,7 +778,7 @@ export default class PacmanScene extends Phaser.Scene {
       setTimeout(() => {
         this.eatFantom = 0;
       }, 1000);
-      this.ghost1.setTexture("ghost2");
+      this.ghost1.setTexture("ghost1");
       this.ghost2.setTexture("ghost2");
       this.ghost3.setTexture("ghost3");
       this.ghost4.setTexture("ghost4");
