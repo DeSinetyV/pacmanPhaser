@@ -21,7 +21,9 @@ const config = {
       // debug: true,
     },
   },
-  scene: [PacmanScene, GameOver],
+  scene: [PacmanScene],
+  // scene: [Start,PacmanScene, GameOver],
+
 };
 
 export default new Phaser.Game(config);
