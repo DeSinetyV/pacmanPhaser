@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import WebFontFile from './WebFontFile';
+import Easystar from 'easystarjs'
+
+
 
 export default class PacmanScene extends Phaser.Scene {
   constructor() {
@@ -26,15 +29,15 @@ export default class PacmanScene extends Phaser.Scene {
   newGame = true;
 
   preload() {
-    this.load.image('tiles', 'assets/images/drawtiles-spaced.png');
+    this.load.image('tiles', 'assets/images/test6.png');
     this.load.image('pacman', 'assets/images/Pacman.png');
     for (var i = 1; i < 9; i++) {
       this.load.tilemapCSV('level' + i, 'assets/grid' + i + '.csv');
     }
     this.load.image('ghost1', 'assets/images/Ghost1.png');
     this.load.image('ghost2', 'assets/images/Ghost2.png');
-    this.load.image('ghost3', 'assets/images/Ghost3.png');
-    this.load.image('ghost4', 'assets/images/Ghost4.png');
+    this.load.image('ghost3', 'assets/images/banane.png');
+    this.load.image('ghost4', 'assets/images/poire.png');
     this.load.image('blueGhost', 'assets/images/BlueGhost.png');
     const fonts = new WebFontFile(this.load, 'Pacifico');
     this.load.addFile(fonts);
@@ -128,7 +131,7 @@ export default class PacmanScene extends Phaser.Scene {
           this.lifes -= 1;
           this.lifeDisplay.setText('Lifes : ' + this.lifes + ' ');
         } else {
-          // redirection ï¿½cran Game Over
+          // redirection écran Game Over
           this.newGame = false;
           this.gameOver = true;
           this.player.setVelocity(0, 0);

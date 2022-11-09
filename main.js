@@ -3,6 +3,8 @@ import Phaser from 'phaser';
 import PacmanScene from './scenes/PacmanScene';
 // import Start from './scenes/Start';
 import GameOver from './scenes/GameOver';
+import easystarjs from 'easystarjs'
+
 
 const config = {
   type: Phaser.AUTO,
