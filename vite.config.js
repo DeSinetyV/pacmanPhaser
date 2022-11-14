@@ -1,4 +1,4 @@
 export default {
-base:'/desinetyv.github.io/',
+base:'/viteapp/',
     
 }
