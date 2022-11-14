@@ -1,4 +1,6 @@
 export default {
-base:'/viteapp/',
+// base:'/viteapp/',
+base:'/PacmanPhaser/',
+
     
 }
