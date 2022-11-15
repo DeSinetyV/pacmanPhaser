@@ -35,7 +35,7 @@ export default class PacmanScene extends Phaser.Scene {
     this.load.audio('backgroundMusic',"assets/sounds/pacman.wav");
     this.load.image("tiles", "assets/images/drawtiles-spaced.png");
     // this.load.image("pacman", "assets/images/Pacman.png");
-    this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet("pacman", "assets/images/Pacman1.png", 32, 32 );
 
     for (var i = 1; i < 9; i++) {
       this.load.tilemapCSV("level" + i, "assets/grid" + i + ".csv");
