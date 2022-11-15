@@ -34,8 +34,8 @@ export default class PacmanScene extends Phaser.Scene {
   preload() {
     this.load.audio('backgroundMusic',"assets/sounds/pacman.wav");
     this.load.image("tiles", "assets/images/drawtiles-spaced.png");
-    // this.load.image("pacman", "assets/images/Pacman.png");
-    this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
+    this.load.image("pacman", "assets/images/Pacman.png");
+    // this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
 
     for (var i = 1; i < 9; i++) {
       this.load.tilemapCSV("level" + i, "assets/grid" + i + ".csv");
@@ -56,16 +56,11 @@ export default class PacmanScene extends Phaser.Scene {
       tileHeight: 32,
     });
 
-    const PacManAnimation = this.anims.create({
-      key: 'walk',
-      frames: this.anims.generateFrameNumbers('pacman'),
-      frameRate:5
-  });
-
-
-
-
-
+  //   const PacManAnimation = this.anims.create({
+  //     key: 'walk',
+  //     frames: this.anims.generateFrameNumbers('pacman'),
+  //     frameRate:5
+  // });
 
     const tileset = this.map.addTilesetImage("tiles", null, 32, 32, 1, 2);
     this.layer = this.map.createLayer(0, tileset, 0, 0);
@@ -75,6 +70,7 @@ export default class PacmanScene extends Phaser.Scene {
     this.ghost2 = this.physics.add.image(288 + 16, 320 + 16, "ghost2");
     this.ghost3 = this.physics.add.image(320 + 16, 320 + 16, "ghost3");
     this.ghost4 = this.physics.add.image(288 + 16, 288 + 16, "ghost4");
+
     this.backgroundMusic  = this.sound.add('backgroundMusic', {volume: 0.05});
     this.backgroundMusic.loop = true;
     this.backgroundMusic.play();
