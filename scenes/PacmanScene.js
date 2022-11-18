@@ -11,6 +11,7 @@ export default class PacmanScene extends Phaser.Scene {
 
   layer = null;
   player = null;
+  ghost1 =null;
   map = null;
   lifes = 3;
   currentDirection = null;
@@ -34,13 +35,18 @@ export default class PacmanScene extends Phaser.Scene {
   preload() {
     this.load.audio('backgroundMusic',"assets/sounds/pacman.wav");
     this.load.image("tiles", "assets/images/drawtiles-spaced.png");
-    this.load.image("pacman", "assets/images/Pacman.png");
-    // this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
+    // this.load.image("pacman", "assets/images/Pacman.png");
+    this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet("ghost1", "assets/images/Ghost1Sprite.png", { frameWidth: 32, frameHeight: 32 });
+    // this.load.spritesheet("ghost2", "assets/images/Ghost2Sprite.png", { frameWidth: 32, frameHeight: 32 });
+    // this.load.spritesheet("ghost3", "assets/images/Ghost3Sprite.png", { frameWidth: 32, frameHeight: 32 });
+    // this.load.spritesheet("ghost4", "assets/images/Ghost4Sprite.png", { frameWidth: 32, frameHeight: 32 });
+
 
     for (var i = 1; i < 9; i++) {
       this.load.tilemapCSV("level" + i, "assets/grid" + i + ".csv");
     }
-    this.load.image("ghost1", "assets/images/Ghost1.png");
+    // this.load.image("ghost1", "assets/images/Ghost1.png");
     this.load.image("ghost2", "assets/images/Ghost2.png");
     this.load.image("ghost3", "assets/images/Ghost3.png");
     this.load.image("ghost4", "assets/images/Ghost4.png");
@@ -56,24 +62,58 @@ export default class PacmanScene extends Phaser.Scene {
       tileHeight: 32,
     });
 
-  //   const PacManAnimation = this.anims.create({
-  //     key: 'walk',
-  //     frames: this.anims.generateFrameNumbers('pacman'),
-  //     frameRate:5
-  // });
+    const PacManAnimation = this.anims.create({
+      key: 'walk',
+      frames: this.anims.generateFrameNumbers('pacman',{start:1, end:2}),
+      frameRate:5,
+
+  });
+  
+  const ghost1right = this.anims.create({
+    key: 'ghost1right',
+    frames: this.anims.generateFrameNumbers('ghost1',{start:0, end:0}),
+    frameRate:5,
+  
+  });
+  const ghost1left = this.anims.create({
+    key: 'ghost1left',
+    frames: this.anims.generateFrameNumbers('ghost1',{start:1, end:1}),
+    frameRate:5,
+
+  });
+  const ghost1down = this.anims.create({
+    key: 'ghost1down',
+    frames: this.anims.generateFrameNumbers('ghost1',{start:2, end:2}),
+    frameRate:5,
+
+  });
+  const ghost1up = this.anims.create({
+    key: 'ghost1up',
+    frames: this.anims.generateFrameNumbers('ghost1',{start:3, end:3}),
+    frameRate:5,
+
+  });
 
     const tileset = this.map.addTilesetImage("tiles", null, 32, 32, 1, 2);
     this.layer = this.map.createLayer(0, tileset, 0, 0);
     this.player = this.physics.add.sprite(32 * 9 + 16, 32 * 12 + 16, "pacman");
+    this.ghost1 = this.physics.add.sprite(256 + 16, 320 + 16, "ghost1");
+
+
     this.player.play({ key: 'walk', repeat: -1 });
-    this.ghost1 = this.physics.add.image(256 + 16, 320 + 16, "ghost1");
+    
+    // this.ghost1 = this.physics.add.image(256 + 16, 320 + 16, "ghost1");
     this.ghost2 = this.physics.add.image(288 + 16, 320 + 16, "ghost2");
     this.ghost3 = this.physics.add.image(320 + 16, 320 + 16, "ghost3");
     this.ghost4 = this.physics.add.image(288 + 16, 288 + 16, "ghost4");
+    
+    this.ghost1.play({ key: 'ghost1right', repeat: 0 });
 
     this.backgroundMusic  = this.sound.add('backgroundMusic', {volume: 0.05});
     this.backgroundMusic.loop = true;
-    this.backgroundMusic.play();
+    // this.backgroundMusic.play();
+    // this.backgroundMusic.stop();
+
 
     this.enemyGroup = this.add.group();
     this.enemyGroup.add(this.ghost1, true);
@@ -674,6 +714,7 @@ export default class PacmanScene extends Phaser.Scene {
     var pixelY = tile.pixelY;
 
     while (tile.index !== 2) {
+      this.backgroundMusic.play();
       if (tile !== null) {
         tile = this.layer.getTileAtWorldXY(tile.pixelX - 32, tile.pixelY, true);
         if (tile === null) {
