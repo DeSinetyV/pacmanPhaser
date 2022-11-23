@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import WebFontFile from "./WebFontFile";
 import Easystar from "easystarjs";
+import Ghost from "./ghost";
 
 
 
@@ -68,31 +69,8 @@ export default class PacmanScene extends Phaser.Scene {
       frameRate:5,
 
   });
-  
-  const ghost1right = this.anims.create({
-    key: 'ghost1right',
-    frames: this.anims.generateFrameNumbers('ghost1',{start:0, end:0}),
-    frameRate:5,
-  
-  });
-  const ghost1left = this.anims.create({
-    key: 'ghost1left',
-    frames: this.anims.generateFrameNumbers('ghost1',{start:1, end:1}),
-    frameRate:5,
 
-  });
-  const ghost1down = this.anims.create({
-    key: 'ghost1down',
-    frames: this.anims.generateFrameNumbers('ghost1',{start:2, end:2}),
-    frameRate:5,
-
-  });
-  const ghost1up = this.anims.create({
-    key: 'ghost1up',
-    frames: this.anims.generateFrameNumbers('ghost1',{start:3, end:3}),
-    frameRate:5,
-
-  });
+  Ghost(this);
 
     const tileset = this.map.addTilesetImage("tiles", null, 32, 32, 1, 2);
     this.layer = this.map.createLayer(0, tileset, 0, 0);
@@ -101,13 +79,17 @@ export default class PacmanScene extends Phaser.Scene {
 
 
     this.player.play({ key: 'walk', repeat: -1 });
+    this.ghost1.play({ key: 'ghost1right', repeat: 0 });
+    this.ghost2.play({ key: 'ghost2right', repeat: 0 });
+    this.ghost3.play({ key: 'ghost3right', repeat: 0 });
+    this.ghost4.play({ key: 'ghost4right', repeat: 0 });
+
     
     // this.ghost1 = this.physics.add.image(256 + 16, 320 + 16, "ghost1");
-    this.ghost2 = this.physics.add.image(288 + 16, 320 + 16, "ghost2");
-    this.ghost3 = this.physics.add.image(320 + 16, 320 + 16, "ghost3");
-    this.ghost4 = this.physics.add.image(288 + 16, 288 + 16, "ghost4");
+    // this.ghost2 = this.physics.add.image(288 + 16, 320 + 16, "ghost2");
+    // this.ghost3 = this.physics.add.image(320 + 16, 320 + 16, "ghost3");
+    // this.ghost4 = this.physics.add.image(288 + 16, 288 + 16, "ghost4");
     
-    this.ghost1.play({ key: 'ghost1right', repeat: 0 });
 
     this.backgroundMusic  = this.sound.add('backgroundMusic', {volume: 0.05});
     this.backgroundMusic.loop = true;
@@ -538,6 +520,7 @@ export default class PacmanScene extends Phaser.Scene {
     switch (move) {
       // --------------------------------------------------------------
       case "left":
+        this.ghost1.play({ key: 'ghost1left', repeat: 0 });
         var tile = this.layer.getTileAtWorldXY(ghost.x - 32, ghost.y, true);
         if (tile.index !== 2) {
           ghost.x -= 32;
@@ -547,6 +530,7 @@ export default class PacmanScene extends Phaser.Scene {
       // ---------------------------------------------------
 
       case "right":
+        this.ghost1.play({ key: 'ghost1right', repeat: 0 });
         var tile = this.layer.getTileAtWorldXY(ghost.x + 32, ghost.y, true);
 
         if (tile.index !== 2) {
@@ -558,6 +542,7 @@ export default class PacmanScene extends Phaser.Scene {
       // ---------------------------------------------------
 
       case "up":
+        this.ghost1.play({ key: 'ghost1up', repeat: 0 });
         var tile = this.layer.getTileAtWorldXY(ghost.x, ghost.y - 32, true);
         if (tile.index !== 2) {
           ghost.y -= 32;
@@ -567,6 +552,7 @@ export default class PacmanScene extends Phaser.Scene {
       // ---------------------------------------------------
 
       case "down":
+        this.ghost1.play({ key: 'ghost1down', repeat: 0 });
         var tile = this.layer.getTileAtWorldXY(ghost.x, ghost.y + 32, true);
         if (tile.index !== 2) {
           ghost.y += 32;
