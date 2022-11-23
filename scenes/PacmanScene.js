@@ -669,7 +669,7 @@ export default class PacmanScene extends Phaser.Scene {
 
   // Ghost random movement
 
-  GhostMoveRandom(ghost,y) {
+  GhostMoveRandom(ghost) {
     let moveDir = ["left", "right", "up", "down"];
     let move = moveDir[Math.floor(Math.random() * 4)];
     switch (move) {
@@ -678,7 +678,6 @@ export default class PacmanScene extends Phaser.Scene {
         var tile = this.layer.getTileAtWorldXY(ghost.x - 32, ghost.y, true);
         if (tile.index !== 2) {
           this.GhostMoveLeft(ghost);
-      
         }
         break;
 
@@ -718,8 +717,7 @@ export default class PacmanScene extends Phaser.Scene {
 
   GhostMove(layer) {
     const ghosts = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
-    const FinalPos = [2, 1, 17, 1, 1, 20, 17, 20];
-    let y = [1,1,1,1]
+    const FinalPos = [2, 1, 16, 1, 2, 20, 16, 20];
     for (let i = 0; i < ghosts.length; i++) {
       let playerPos = layer.getTileAtWorldXY(this.player.x, this.player.y);
       let ghostPos = layer.getTileAtWorldXY(ghosts[i].x, ghosts[i].y);
@@ -732,7 +730,6 @@ export default class PacmanScene extends Phaser.Scene {
         (pathCheck) => {
           if (this.newGame == false) {
             if (ghostPhase[i] == "scatter") {
-              // console.log('scatter' + [i])
               setTimeout(() => 
               this.GhostScatter(
                 ghosts[i],
@@ -740,21 +737,17 @@ export default class PacmanScene extends Phaser.Scene {
                 FinalPos[i * 2 + 1]
               )
               ,i*5000)
-              if(ghosts[i] == this.ghost3 || ghosts[i] == this.ghost4){
-                console.log[i]
-                console.log((ghosts[i].y-16) + ' ' + (FinalPos[i *2 +1]*32))
-          
-                console.log((ghosts[i].x-16) + " " + FinalPos[i*2]*32)
-        
-              }
+              if(ghosts[i] == this.ghost4) {console.log('scatter' + [i])}
               if ((ghosts[i].x-16) == FinalPos[i *2]*32 && (ghosts[i].y-16) == FinalPos[i*2 +1]*32) {
                 ghostPhase[i] = null
-                console.log('oui')
+                
               }
-            } 
+            }
+            
+            
             else if (this.newLife == true) {
               ghostPhase[i] = 'scatter'
-
+              console.log('newLife')
               if(i == 3) {
               this.newLife = false
               }
@@ -764,7 +757,7 @@ export default class PacmanScene extends Phaser.Scene {
               this.newLife == false &&
               this.scare == false
             ) {
-              console.log('chase' + i)
+              if(ghosts[i] == this.ghost4) {console.log('chase' + [i])}
               this.GhostChase(ghosts[i]);
             } 
             
@@ -773,14 +766,15 @@ export default class PacmanScene extends Phaser.Scene {
               pathCheck.length > 10 &&
               this.newLife == false
             ) {
-              console.log('random' + [i])
-              y[i] = 0
-              this.GhostMoveRandom(ghosts[i],y[i]);
+              if(ghosts[i] == this.ghost4) {console.log('random' + [i])}
+              
+            
+              this.GhostMoveRandom(ghosts[i]);
               
             } 
             
             else if (this.scare == true && pathCheck.length <= 10) {
-              // console.log("scare");
+              console.log("scare");
               this.GhostScare(ghosts[i]);
             }
           }
