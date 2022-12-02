@@ -32,7 +32,7 @@ export default class PacmanScene extends Phaser.Scene {
   easystar = new Easystar.js();
   scare = false;
   newLife = false;
-  ghostMoveDirection = [null,null,null,null]
+  ghostScare = [false,false,false,false]
   
 
   preload() {
@@ -187,15 +187,19 @@ export default class PacmanScene extends Phaser.Scene {
       } else if (this.eatFantom == 1) {
         if (ghost == this.ghost1) {
           // this.ghost1.setPosition(288 + 16, 288 + 16);
+          this.ghostPhase[0] = 'scare'
         }
         if (ghost == this.ghost2) {
-          this.ghost2.setPosition(288 + 16, 320 + 16);
+          // this.ghost2.setPosition(288 + 16, 320 + 16);
+          this.ghostPhase[1] = 'scare'
         }
         if (ghost == this.ghost3) {
-          this.ghost3.setPosition(320 + 16, 320 + 16);
+          // this.ghost3.setPosition(320 + 16, 320 + 16);
+          this.ghostPhase[2] = 'scare'
         }
         if (ghost == this.ghost4) {
-          this.ghost4.setPosition(256 + 16, 320 + 16);
+          // this.ghost4.setPosition(256 + 16, 320 + 16);
+          this.ghostPhase[3] = 'scare'
         }
 
         this.score += 300;
@@ -229,7 +233,6 @@ export default class PacmanScene extends Phaser.Scene {
     });
   }
   update() {
-
 
     var x = Math.ceil(this.player.x / 32) - 1;
     var y = Math.ceil(this.player.y / 32) - 1;
@@ -537,7 +540,7 @@ export default class PacmanScene extends Phaser.Scene {
           console.log("The path to the destination point was not found.");
         }
         if (path) {
-          
+          console.log(path)
           if(path.length > 0) {
             var currentPointx = path[0].x;
             var currentPointy = path[0].y;
@@ -546,22 +549,22 @@ export default class PacmanScene extends Phaser.Scene {
             if (nextPointy < currentPointy) {
               this.GhostMoveUp(ghost);
               while((ghost.y-16)%32 != 0) {
-                ghost.y -- 
+                ghost.y --; 
               }
             } else if (nextPointy > currentPointy) {
               this.GhostMoveDown(ghost);
               while((ghost.y-16)%32 != 0) {
-                ghost.y ++
+                ghost.y ++;
               }
             } else if (nextPointx < currentPointx) {
               this.GhostMoveLeft(ghost);
               while((ghost.x-16)%32 != 0) {
-                ghost.x -- 
+                ghost.x --; 
               }
             } else if (nextPointx > currentPointx) {
               this.GhostMoveRight(ghost);
               while((ghost.x-16)%32 != 0) {
-                ghost.x ++ 
+                ghost.x ++; 
               }
             }
           }
@@ -731,38 +734,32 @@ export default class PacmanScene extends Phaser.Scene {
 
     const ghosts = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
     const FinalPos = [2, 1, 16, 1, 2, 20, 16, 20];
+
     for (let i = 0; i < ghosts.length; i++) {
       let playerPos = layer.getTileAtWorldXY(this.player.x, this.player.y);
       let ghostPos = layer.getTileAtWorldXY(ghosts[i].x, ghosts[i].y);
       let ghostPhase = this.ghostPhase;
-      this.easystar.findPath(
-        ghostPos.x,
-        ghostPos.y,
-        playerPos.x,
-        playerPos.y,
+
+      this.easystar.findPath(ghostPos.x,ghostPos.y,playerPos.x,playerPos.y,
         (pathCheck) => {
+
           if (this.newGame == false) {
-            if (
-              ghostPhase[i] == null &&
-              pathCheck.length > 10 &&
-              this.newLife == false
-            ) {
+
+            if (ghostPhase[i] == null && pathCheck.length > 10 && this.newLife == false) {
               if(ghosts[i] == this.ghost2) {
-                console.log('random')
+                console.log('random' + [i])
               }
               this.GhostMoveRandom(ghosts[i]);
 
             }
+
             if (ghostPhase[i] == "scatter") {
+              if(ghosts[i] == this.ghost2) {
+                console.log('scatter'+ [i])
+              }
              // Lance Scatter en décalage
               setTimeout(() => 
-              this.GhostScatter(
-                ghosts[i],
-                FinalPos[i * 2],
-                FinalPos[i * 2 + 1]
-              )
-              ,i*1980)
-
+              this.GhostScatter(ghosts[i],FinalPos[i * 2],FinalPos[i * 2 + 1]),i*1980)
               // Passe de scatter à Random
               if ((ghosts[i].x-16) == FinalPos[i *2]*32 && (ghosts[i].y-16) == FinalPos[i*2 +1]*32) {
                 ghostPhase[i] = null   
@@ -776,28 +773,26 @@ export default class PacmanScene extends Phaser.Scene {
               this.newLife = false
               }
             } 
-            
+
             // Lance Chase
-            if (
-              ghostPhase[i] == null &&
-              pathCheck.length <= 10 &&
-              this.newLife == false &&
-              this.scare == false
+            if (ghostPhase[i] == null && pathCheck.length <= 10 && this.newLife == false && this.scare == false
             ) {
-              if(ghosts[i] == this.ghost4) {}
               this.GhostChase(ghosts[i]);
             }
 
-            // Lance Random
-
-
             // Lance Scare
-            if(this.scare == true && playerPos.x == ghostPos.x && playerPos.y == ghostPos.y) {
-              console.log('oui')
-              this.GhostScatter(ghosts[i], 9,10)
-            }
+
             if (this.scare == true && pathCheck.length <= 10) {             
               this.GhostScare(ghosts[i]);
+            }
+            if(ghostPhase[i] == 'scare') {
+              if(ghosts[i] == this.ghost2) {
+              console.log('ReturnPosScare'+ [i])
+            }
+              this.GhostReturnPos(ghosts[i],9, 10)
+                if ((ghosts[i].x-16) == 9*32 && (ghosts[i].y-16) == 10*32) {
+                  ghostPhase[i] = null
+                }
             } 
           }
         }
