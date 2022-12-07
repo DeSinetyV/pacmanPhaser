@@ -49,13 +49,13 @@ export default class PacmanScene extends Phaser.Scene {
 
     this.load.image("tiles", "assets/images/drawtiles-spaced.png");
     // this.load.image("pacman", "assets/images/Pacman.png");
-    this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("ghost1", "assets/images/Ghost1Sprite.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("ghost2", "assets/images/Ghost2Sprite.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("ghost3", "assets/images/Ghost3Sprite.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("ghost4", "assets/images/Ghost4Sprite.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("blueGhost", "assets/images/BlueGhostSprite.png", { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet("EyesGhost", "assets/images/EyesGhostSprite.png", { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet("pacman", "assets/images/Pacman1.png", { frameWidth: 32, frameHeight: 32 });
 
     // EyesGhostSprite.png
     this.load.spritesheet("fruits", "assets/images/fruits.png", { frameWidth: 32, frameHeight: 32 });
