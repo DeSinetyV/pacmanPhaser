@@ -39,7 +39,8 @@ export default class PacmanScene extends Phaser.Scene {
   eatBonus= 0;
   levelGhost = 1;
   lifeLose = 3;
-  backgroundMusicOn = 0;
+  backgroundMusicOn = 0;;
+  ghostVelocity = [1,1,1,1]
   
 
   preload() {
@@ -765,7 +766,10 @@ export default class PacmanScene extends Phaser.Scene {
   GhostMoveRandom(ghost,i) {
     let moveDir = ["left", "right", "up", "down"];
     let move = moveDir[Math.floor(Math.random() * 4)];
+    let y = 0
     console.log('oui')
+    while(y==0) {
+    
     switch (move) {
       // --------------------------------------------------------------
       case "left":
@@ -775,6 +779,9 @@ export default class PacmanScene extends Phaser.Scene {
           while((ghost.x-16)%32 != 0) {
             ghost.x -- 
           }
+          y++
+        } else {
+          move = moveDir[Math.floor(Math.random() * 4)];
         }
         break;
 
@@ -788,6 +795,9 @@ export default class PacmanScene extends Phaser.Scene {
           while((ghost.x-16)%32 != 0) {
             ghost.x ++ 
           }
+          y++
+        } else {
+          move = moveDir[Math.floor(Math.random() * 4)];
         }
         break;
 
@@ -800,6 +810,9 @@ export default class PacmanScene extends Phaser.Scene {
           while((ghost.y-16)%32 != 0) {
             ghost.y -- 
           }
+          y++
+        } else {
+          move = moveDir[Math.floor(Math.random() * 4)];
         }
         break;
 
@@ -812,9 +825,12 @@ export default class PacmanScene extends Phaser.Scene {
           while((ghost.y-16)%32 != 0) {
             ghost.y ++ 
           }
+          y++
+        } else {
+          move = moveDir[Math.floor(Math.random() * 4)];
         }
         break;
-
+      }
   }
   }
 
@@ -823,13 +839,13 @@ export default class PacmanScene extends Phaser.Scene {
 
   GhostMove(layer) {
     const ghosts = [this.ghost1, this.ghost2, this.ghost3, this.ghost4];
-    const FinalPos = [2, 1, 16, 1, 2, 20, 16, 20];
+    let FinalPos = [2, 1, 16, 1, 2, 20, 16, 20];
     // console.log(this.lifeLose)
     // console.log(this.lifes)
     
     // console.log('*************************************')
     if (this.level == 6) {
-
+      FinalPos = [6,1,13,1,2,20,16,20]
     }
     for (let i = 0; i < ghosts.length; i++) {
       let playerPos = layer.getTileAtWorldXY(this.player.x, this.player.y);
