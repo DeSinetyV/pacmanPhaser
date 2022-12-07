@@ -333,7 +333,7 @@ export default class PacmanScene extends Phaser.Scene {
       this.levelGhost++
       this.ghostPhase = ["scatter","scatter","scatter","scatter"];
       this.tab = []
-      console.log('HOURRA')
+
       for (var y = 0; y < this.map.height; y++) {
         for (var x = 0; x < this.map.width; x++) {
           var tile = this.map.getTileAt(x, y);
