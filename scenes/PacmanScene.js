@@ -22,7 +22,7 @@ export default class PacmanScene extends Phaser.Scene {
   lifeDisplay = null;
   levelDisplay = null;
   level = 1;
-  speed = 300;
+  speed = 100;
   tab = [];
   eatFantom = 0;
   gameOver = false;
@@ -129,6 +129,7 @@ export default class PacmanScene extends Phaser.Scene {
     this.enemyGroup.add(this.ghost3, true);
     this.enemyGroup.add(this.ghost4, true);
 
+
     //mise en tableau du CSV
     var count = 0;
     for (var y = 0; y < this.map.height; y++) {
@@ -155,12 +156,27 @@ export default class PacmanScene extends Phaser.Scene {
       fontStyle: "bold",
     });
  
-    this.gameOverText.setInteractive();
-    this.gameOverText.on("pointerdown", () => this.newGamelaunch(false));
+    // this.gameOverText.setInteractive();
+    // this.input.on('pointerdown', () => this.newGamelaunch(false));
+    // this.gameOverText.on("pointerdown", () => this.newGamelaunch(false));
 
 
     this.gameOverText.setOrigin(0.5);
     this.gameOverText.visible = false;
+
+
+    // Victory message
+
+
+    this.VictoryText = this.add.text(300, 335, "VICTOIRE", {
+      fontSize: "50px",
+      color: "#0f0",
+      fontStyle: "bold",
+    });
+ 
+
+    this.VictoryText.setOrigin(0.5);
+    this.VictoryText.visible = false;
 
     //New game message
 
@@ -190,7 +206,7 @@ export default class PacmanScene extends Phaser.Scene {
     //rencontre entre Pacman et fantome
 
     this.physics.add.overlap(this.player, this.enemyGroup, (player, ghost) => {
-      if (this.eatFantom == 0 && this.deathAnimation == 0) {
+      if (this.eatFantom == 0 && this.deathAnimation == 0 && ghost.texture.key !== 'EyesGhost') {
         if (this.lifes > 0) {
           this.deathAnimation = 1
           this.player.play({ key: 'death', repeat: 0 });
@@ -205,6 +221,12 @@ export default class PacmanScene extends Phaser.Scene {
             this.ghost2.setPosition(288 + 16, 320 + 16);
             this.ghost3.setPosition(320 + 16, 320 + 16);
             this.ghost4.setPosition(288 + 16, 288 + 16);
+            this.ghost1.play({ key: 'ghost1Up', repeat: 0 });
+            this.ghost2.play({ key: 'ghost2Up', repeat: 0 });
+            this.ghost3.play({ key: 'ghost3Up', repeat: 0 });
+            this.ghost4.play({ key: 'ghost4Up', repeat: 0 });
+
+
             this.previousDirection = null;
             this.currentDirection = null;
             this.newLife = true;
@@ -236,7 +258,9 @@ export default class PacmanScene extends Phaser.Scene {
               this.layer.setAlpha(0.1);
               this.enemyGroup.setAlpha(0.1);
               this.player.setAlpha(0.1);
-          clearInterval(interval)            }, 500);
+              this.fruit.setAlpha(0.1);
+              this.input.on('pointerdown', () => this.newGamelaunch(false));
+          clearInterval(interval)}, 500);
           }
         }
       } else if (this.eatFantom == 1) {
@@ -258,6 +282,7 @@ export default class PacmanScene extends Phaser.Scene {
         }
 
         this.score += 300;
+        // console.log(testgdfber)
       }
     });
 
@@ -330,12 +355,22 @@ export default class PacmanScene extends Phaser.Scene {
     if (x > 17 || x < 1) {
       this.block.destroy;
       if (this.pileCount === this.pilesNumber) {
-      // if (this.pileCount >10*this.level){
+      // if (this.pileCount >1*this.level){
+        if(this.level <8){
         this.level += 1;
         this.eatBonus =0;
         this.backgroundMusic.stop();
         this.backgroundMusicOn = 0;
         this.scene.restart();
+        } else {
+        this.VictoryText.visible = true;
+              this.layer.setAlpha(0.1);
+              this.enemyGroup.setAlpha(0.1);
+              this.player.setAlpha(0.1);
+              this.fruit.setAlpha(0.1);
+              this.input.on('pointerdown', () => this.newGamelaunch(false));
+              this.player.setVelocity(0, 0);
+        }
       }
     }
 
@@ -498,11 +533,8 @@ export default class PacmanScene extends Phaser.Scene {
 
   // Mouvement des fantomes
 
-  GhostMoveRight(ghost) {
-    console.log('test');
-    console.log(ghost);
-
-      (this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Right', repeat: 0 }):ghost.play({ key: 'blueGhostRight', repeat: 0 });
+  GhostMoveRight(ghost,i) {
+    (this.ghostPhase[i]=='scare')?ghost.play({ key: 'EyesGhostRight', repeat: 0 }):((this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Right', repeat: 0 }):ghost.play({ key: 'blueGhostRight', repeat: 0 }));
     let start = Date.now();
     let timer = setInterval(function () {
       
@@ -520,9 +552,9 @@ export default class PacmanScene extends Phaser.Scene {
     }
     
   }
-  GhostMoveLeft(ghost) {
-
-    (this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Left', repeat: 0 }):ghost.play({ key: 'blueGhostLeft', repeat: 0 });
+  GhostMoveLeft(ghost,i) {
+    
+    (this.ghostPhase[i]=='scare')?ghost.play({ key: 'EyesGhostLeft', repeat: 0 }):((this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Left', repeat: 0 }):ghost.play({ key: 'blueGhostLeft', repeat: 0 }));
 
     let start = Date.now();
     let timer = setInterval(function () {
@@ -542,8 +574,8 @@ export default class PacmanScene extends Phaser.Scene {
     }
   }
 
-  GhostMoveUp(ghost) {
-    (this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Up', repeat: 0 }):ghost.play({ key: 'blueGhostUp', repeat: 0 });
+  GhostMoveUp(ghost,i) {
+    (this.ghostPhase[i]=='scare')?ghost.play({ key: 'EyesGhostUp', repeat: 0 }):((this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Up', repeat: 0 }):ghost.play({ key: 'blueGhostUp', repeat: 0 }));
     let start = Date.now();
     let timer = setInterval(function () {
       let timePassed = Date.now() - start;
@@ -561,8 +593,10 @@ export default class PacmanScene extends Phaser.Scene {
     }
   }
 
-  GhostMoveDown(ghost) {
-    (this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Down', repeat: 0 }):ghost.play({ key: 'blueGhostDown', repeat: 0 });
+  GhostMoveDown(ghost,i) {
+    // console.log(i)
+    (this.ghostPhase[i]=='scare')?ghost.play({ key: 'EyesGhostDown', repeat: 0 }):((this.eatFantom == 0)?ghost.play({ key: ghost.texture.key + 'Down', repeat: 0 }):ghost.play({ key: 'blueGhostDown', repeat: 0 }));
+    ;
     let start = Date.now();
     var i = 0
     let timer = setInterval(function () {
@@ -913,6 +947,7 @@ export default class PacmanScene extends Phaser.Scene {
               this.GhostScatter(ghosts[i],9, 9,i)
                 if ((ghosts[i].x-16) == 9*32 && (ghosts[i].y-16) == 9*32) {
                   ghostPhase[i] = null
+                  ghosts[i].play({ key: 'ghost'+ (i+1) + 'Up', repeat: 0 })   
                 }
             } 
           }
@@ -975,11 +1010,11 @@ export default class PacmanScene extends Phaser.Scene {
       var pixelY = tile.pixelY;
       var X = 0;
       if (tile !== null) {
-        console.log(this.player.x);
-        console.log(tile);
+        // console.log(this.player.x);
+        // console.log(tile);
         (this.player.x > 32*18)? X =48:X=32;
         tile = this.layer.getTileAtWorldXY(tile.pixelX - X, tile.pixelY, true);
-        console.log(tile);
+        // console.log(tile);
         if (tile === null && this.player.x < 32*18) {
           tile = this.layer.getTileAtWorldXY(16, pixelY, true);
           tile.pixelX = -50;
@@ -1011,8 +1046,8 @@ export default class PacmanScene extends Phaser.Scene {
   moveRight() {
     let tile = null;
     this.currentDirection = "right";
-    console.log(this.player.x);
-    console.log(this.player.y)
+    // console.log(this.player.x);
+    // console.log(this.player.y)
     tile = this.layer.getTileAtWorldXY(this.player.x, this.player.y, true);
 
     while (tile.index !== 2) {
@@ -1022,10 +1057,10 @@ export default class PacmanScene extends Phaser.Scene {
       }
       var pixelY = tile.pixelY;
       if (tile !== null) {
-        console.log(tile);
+        // console.log(tile);
         (tile.pixelX < 0)? tile.pixelX =0:tile.pixelX=tile.pixelX
         tile = this.layer.getTileAtWorldXY(tile.pixelX + 32, tile.pixelY, true);
-        console.log(tile)
+        // console.log(tile)
         if (tile === null && this.player.x > 64) {
           tile = this.layer.getTileAtWorldXY(18 * 32 + 16, pixelY, true);
           tile.pixelX = 19 * 32;
@@ -1113,18 +1148,18 @@ export default class PacmanScene extends Phaser.Scene {
   Ghost(number) {
     if (number % 2 == 0) {
       this.eatFantom = 1;
-      this.ghost1.setTexture("blueGhost");
-      this.ghost2.setTexture("blueGhost");
-      this.ghost3.setTexture("blueGhost");
-      this.ghost4.setTexture("blueGhost");
+      if(this.ghostPhase[0] !== 'scare')this.ghost1.setTexture("blueGhost");
+      if(this.ghostPhase[1] !== 'scare')this.ghost2.setTexture("blueGhost");
+      if(this.ghostPhase[2] !== 'scare')this.ghost3.setTexture("blueGhost");
+      if(this.ghostPhase[3] !== 'scare')this.ghost4.setTexture("blueGhost");
     } else {
       setTimeout(() => {
         this.eatFantom = 0;
       }, 1000);
-      this.ghost1.setTexture("ghost1");
-      this.ghost2.setTexture("ghost2");
-      this.ghost3.setTexture("ghost3");
-      this.ghost4.setTexture("ghost4");
+      if(this.ghostPhase[0] !== 'scare')this.ghost1.setTexture("ghost1");
+      if(this.ghostPhase[1] !== 'scare')this.ghost2.setTexture("ghost2");
+      if(this.ghostPhase[2] !== 'scare')this.ghost3.setTexture("ghost3");
+      if(this.ghostPhase[3] !== 'scare')this.ghost4.setTexture("ghost4");
     }
   }
 

@@ -45,11 +45,34 @@ export default function Ghost(main) {
 
     });
     main.anims.create({
-        key: 'blueGhostup',
+        key: 'blueGhostUp',
         frames: main.anims.generateFrameNumbers('blueGhost',{start:3, end:3}),
         frameRate:5,
     });
 
+
+    main.anims.create({
+        key: 'EyesGhostRight',
+        frames: main.anims.generateFrameNumbers('EyesGhost',{start:0, end:0}),
+    
+    });
+    main.anims.create({
+        key: 'EyesGhostLeft',
+        frames: main.anims.generateFrameNumbers('EyesGhost',{start:1, end:1}),
+        frameRate:5,
+
+    });
+    main.anims.create({
+        key: 'EyesGhostDown',
+        frames: main.anims.generateFrameNumbers('EyesGhost',{start:2, end:2}),
+        frameRate:5,
+
+    });
+    main.anims.create({
+        key: 'EyesGhostUp',
+        frames: main.anims.generateFrameNumbers('EyesGhost',{start:3, end:3}),
+        frameRate:5,
+    });
 
 
     for(var i=0;i<=4;i++){
